@@ -192,9 +192,7 @@ class ConfigurableQAGenerator:
     def __init__(self, config: Config):
         self.config = config
         self.model = OllamaProvider(
-            model_name=config.model.name,
             base_url=config.model.base_url,
-            timeout=config.model.timeout
         )
         
         self.agent = Agent(
@@ -407,8 +405,8 @@ class ConfigurableUnslothFormatter:
         elif file_format == "csv":
             df = pd.DataFrame(formatted_data)
             df.to_csv(output_path, index=False)
-        
-    print(f"Dataset saved to: {output_path}")
+        # Notify user of saved dataset
+        print(f"Dataset saved to: {output_path}")
 
 
 class ConfigurableMarkdownToQAConverter:

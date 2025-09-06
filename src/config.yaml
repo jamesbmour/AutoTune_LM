@@ -22,9 +22,9 @@ output:
 # Model Configuration
 model:
   # Ollama model name
-  name: "llama3.2"
+  name: "llama3.2:latest"
   # API base URL for Ollama
-  base_url: "http://localhost:11434"
+  base_url: "http://eos.local:11434"
   # Request timeout in seconds
   timeout: 300
   # Temperature for generation (0.0 to 1.0)
