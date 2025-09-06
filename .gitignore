@@ -25,5 +25,9 @@ dist/
 
 # Logs
 *.log
+<<<<<<< HEAD
 .gemini/
 .claude/
+=======
+archive/
+>>>>>>> origin/main
