@@ -51,9 +51,8 @@ class QADataset(BaseModel):
 class ConfigurableMarkdownProcessor:
     """Processes markdown files based on configuration"""
     
-    def __init__(self, config: Config, logger: logging.Logger):
+    def __init__(self, config: Config):
         self.config = config
-        self.logger = logger
         self.md = markdown.Markdown(extensions=['extra', 'codehilite', 'tables'])
     
     def extract_content_from_markdown(self, file_path: Path) -> List[Dict[str, Any]]:
@@ -96,11 +95,11 @@ class ConfigurableMarkdownProcessor:
                     self.config.processing.max_chunk_size):
                     filtered_chunks.append(chunk)
             
-            self.logger.info(f"Extracted {len(filtered_chunks)} valid chunks from {file_path}")
+            print(f"Extracted {len(filtered_chunks)} valid chunks from {file_path}")
             return filtered_chunks
             
         except Exception as e:
-            self.logger.error(f"Error processing {file_path}: {e}")
+            print(f"Error processing {file_path}: {e}")
             return []
     
     def _extract_headers_with_content(self, soup: BeautifulSoup) -> List[Dict[str, Any]]:
@@ -190,9 +189,8 @@ class ConfigurableMarkdownProcessor:
 class ConfigurableQAGenerator:
     """Generates Q&A pairs using configuration-driven prompts"""
     
-    def __init__(self, config: Config, logger: logging.Logger):
+    def __init__(self, config: Config):
         self.config = config
-        self.logger = logger
         self.model = OllamaProvider(
             model_name=config.model.name,
             base_url=config.model.base_url,
@@ -238,18 +236,18 @@ class ConfigurableQAGenerator:
                 self.stats['successful_requests'] += 1
                 self.stats['total_pairs_generated'] += len(validated_pairs)
                 
-                self.logger.debug(f"Generated {len(validated_pairs)} pairs for {source_file}")
+                print(f"Generated {len(validated_pairs)} pairs for {source_file}")
                 return validated_pairs
                 
             except Exception as e:
-                self.logger.warning(f"Attempt {attempt + 1} failed for {source_file}: {e}")
+                print(f"Attempt {attempt + 1} failed for {source_file}: {e}")
                 if attempt < self.config.performance.retry.max_attempts - 1:
                     delay = (self.config.performance.retry.delay * 
                             (2 ** attempt if self.config.performance.retry.exponential_backoff else 1))
                     await asyncio.sleep(delay)
                 else:
                     self.stats['failed_requests'] += 1
-                    self.logger.error(f"All attempts failed for {source_file}: {e}")
+                    print(f"All attempts failed for {source_file}: {e}")
         
         return []
     
@@ -299,11 +297,9 @@ class ConfigurableQAGenerator:
             # Assign question type if not set
             if not hasattr(pair, 'question_type') or not pair.question_type:
                 pair.question_type = self._infer_question_type(pair.question)
-            
             # Validate difficulty level
             if pair.difficulty not in self.config.qa_generation.difficulty_levels:
                 pair.difficulty = "medium"  # Default
-            
             validated_pairs.append(pair)
         
         return validated_pairs
@@ -333,9 +329,8 @@ class ConfigurableQAGenerator:
 class ConfigurableUnslothFormatter:
     """Formats Q&A pairs for different training formats based on configuration"""
     
-    def __init__(self, config: Config, logger: logging.Logger):
+    def __init__(self, config: Config):
         self.config = config
-        self.logger = logger
     
     def format_for_unsloth(self, qa_pairs: List[QAPair]) -> List[Dict[str, Any]]:
         """Format Q&A pairs for Unsloth training"""
@@ -395,7 +390,7 @@ class ConfigurableUnslothFormatter:
         if output_path.exists() and self.config.output.backup_existing:
             backup_path = output_path.with_suffix(f'.backup_{int(time.time())}{output_path.suffix}')
             output_path.rename(backup_path)
-            self.logger.info(f"Created backup: {backup_path}")
+            print(f"Created backup: {backup_path}")
         
         if file_format == "json":
             with open(output_path, 'w', encoding='utf-8') as f:
@@ -413,7 +408,7 @@ class ConfigurableUnslothFormatter:
             df = pd.DataFrame(formatted_data)
             df.to_csv(output_path, index=False)
         
-        self.logger.info(f"Dataset saved to: {output_path}")
+    print(f"Dataset saved to: {output_path}")
 
 
 class ConfigurableMarkdownToQAConverter:
@@ -422,17 +417,13 @@ class ConfigurableMarkdownToQAConverter:
     def __init__(self, config_path: str = "config.yaml"):
         self.config_manager = ConfigManager(config_path)
         self.config = self.config_manager.load_config()
-        self.logger = self.config_manager.setup_logging(self.config)
-        
         # Validate configuration
         self.config_manager.validate_paths(self.config)
-        
         # Initialize components
-        self.processor = ConfigurableMarkdownProcessor(self.config, self.logger)
-        self.generator = ConfigurableQAGenerator(self.config, self.logger)
-        self.formatter = ConfigurableUnslothFormatter(self.config, self.logger)
-        
-        self.logger.info("Converter initialized with configuration")
+        self.processor = ConfigurableMarkdownProcessor(self.config)
+        self.generator = ConfigurableQAGenerator(self.config)
+        self.formatter = ConfigurableUnslothFormatter(self.config)
+        print("Converter initialized with configuration")
     
     async def convert(self) -> QADataset:
         """Main conversion method"""
@@ -448,7 +439,6 @@ class ConfigurableMarkdownToQAConverter:
     
     async def _convert_directory(self, input_dir: Path) -> QADataset:
         """Convert all markdown files in directory"""
-        
         # Find all markdown files
         markdown_files = []
         for ext in self.config.input.extensions:
@@ -456,41 +446,31 @@ class ConfigurableMarkdownToQAConverter:
                 markdown_files.extend(input_dir.glob(f"**/*{ext}"))
             else:
                 markdown_files.extend(input_dir.glob(f"*{ext}"))
-        
         # Limit files if configured
         if self.config.input.max_files:
             markdown_files = markdown_files[:self.config.input.max_files]
-        
-        self.logger.info(f"Found {len(markdown_files)} markdown files to process")
-        
+        print(f"Found {len(markdown_files)} markdown files to process")
         # Process in batches for memory management
         all_qa_pairs = []
         batch_size = self.config.performance.memory.batch_size
-        
         for i in range(0, len(markdown_files), batch_size):
             batch_files = markdown_files[i:i + batch_size]
-            self.logger.info(f"Processing batch {i//batch_size + 1}/{(len(markdown_files) + batch_size - 1)//batch_size}")
-            
+            print(f"Processing batch {i//batch_size + 1}/{(len(markdown_files) + batch_size - 1)//batch_size}")
             batch_pairs = await self._process_file_batch(batch_files)
             all_qa_pairs.extend(batch_pairs)
-            
             # Clear cache if configured
             if self.config.performance.memory.clear_cache:
                 import gc
                 gc.collect()
-        
         # Create and save dataset
         dataset = await self._create_and_save_dataset(all_qa_pairs, markdown_files)
         return dataset
     
     async def _convert_single_file(self, input_file: Path) -> QADataset:
         """Convert single markdown file"""
-        
-        self.logger.info(f"Processing single file: {input_file}")
-        
+        print(f"Processing single file: {input_file}")
         qa_pairs = await self._process_single_file(input_file)
         dataset = await self._create_and_save_dataset(qa_pairs, [input_file])
-        
         return dataset
     
     async def _process_file_batch(self, files: List[Path]) -> List[QAPair]:
@@ -528,7 +508,7 @@ class ConfigurableMarkdownToQAConverter:
             content_chunks = self.processor.extract_content_from_markdown(file_path)
             
             if not content_chunks:
-                self.logger.warning(f"No content extracted from {file_path}")
+                print(f"No content extracted from {file_path}")
                 return []
             
             # Generate Q&A pairs for each chunk
@@ -545,19 +525,16 @@ class ConfigurableMarkdownToQAConverter:
             return all_pairs
             
         except Exception as e:
-            self.logger.error(f"Error processing {file_path}: {e}")
+            print(f"Error processing {file_path}: {e}")
             return []
     
     async def _create_and_save_dataset(self, qa_pairs: List[QAPair], source_files: List[Path]) -> QADataset:
         """Create dataset and save it"""
-        
-        self.logger.info(f"Generated {len(qa_pairs)} total Q&A pairs")
-        
+        print(f"Generated {len(qa_pairs)} total Q&A pairs")
         # Apply validation if configured
         if self.config.validation.enabled:
             qa_pairs = self._validate_dataset(qa_pairs)
-            self.logger.info(f"After validation: {len(qa_pairs)} Q&A pairs")
-        
+            print(f"After validation: {len(qa_pairs)} Q&A pairs")
         # Create dataset with metadata
         dataset = QADataset(
             pairs=qa_pairs,
@@ -570,16 +547,13 @@ class ConfigurableMarkdownToQAConverter:
                 "generation_stats": self.generator.get_stats()
             }
         )
-        
         # Format and save dataset
         formatted_data = self.formatter.format_for_unsloth(qa_pairs)
         output_path = Path(self.config.output.path)
         self.formatter.save_dataset(formatted_data, output_path)
-        
         # Generate statistics if configured
         if self.config.export.generate_stats:
             await self._generate_statistics(dataset)
-        
         return dataset
     
     def _validate_dataset(self, qa_pairs: List[QAPair]) -> List[QAPair]:
@@ -656,8 +630,7 @@ class ConfigurableMarkdownToQAConverter:
         
         with open(stats_path, 'w', encoding='utf-8') as f:
             json.dump(stats, f, indent=2, ensure_ascii=False)
-        
-        self.logger.info(f"Statistics saved to: {stats_path}")
+        print(f"Statistics saved to: {stats_path}")
 
 
 # CLI Interface
