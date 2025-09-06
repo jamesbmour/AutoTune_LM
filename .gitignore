@@ -25,9 +25,9 @@ dist/
 
 # Logs
 *.log
-<<<<<<< HEAD
+archive/
+unsloth_compiled_cache/
+outputs/
 .gemini/
 .claude/
-=======
 archive/
->>>>>>> origin/main

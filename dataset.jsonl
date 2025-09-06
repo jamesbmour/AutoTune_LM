@@ -1,23 +1,17 @@
-{"instruction": "What type of AI are Large Language Models (LLMs)?", "input": "", "output": "Large Language Models (LLMs) are a type of artificial intelligence (AI)"}
-{"instruction": "What is the primary way LLMs generate text?", "input": "", "output": "LLMs work by predicting the next word in a sequence"}
-{"instruction": "What do LLMs use to generate coherent and natural-sounding text?", "input": "", "output": "The model uses its knowledge of grammar, facts, and writing styles"}
-{"instruction": "How is the order of words generated in an LLM?", "input": "", "output": "one word at a time"}
-{"instruction": "What is the main difference between Google's APIs and Amazon's APIs?", "input": "", "output": "Google's APIs are generally more open and flexible, while Amazon's APIs are often more restrictive and require more configuration."}
-{"instruction": "How does Gemini handle recursive $ref`s in JSON Schema?", "input": "", "output": "Gemini raises a UserError if it encounters a recursive $ref` in JSON Schema."}
-{"instruction": "What is Gradio?", "input": "", "output": "Gradio is a high-level library for building AI web applications in Python. It provides a simple and intuitive API for creating chat interfaces, making it easy to integrate your model with web-based applications."}
-{"instruction": "How do I use Gradio?", "input": "", "output": "To use Gradio, you need to create a Python script that defines the UI components and the interaction logic between them. You can then run this script using `python/uv-run` command, which will start a web server and make your application accessible via a URL."}
-{"instruction": "What is the benefit of using Gradio?", "input": "", "output": "The main benefits of using Gradio are its simplicity and ease of use. It allows you to focus on building your AI model without worrying about the complexity of the UI components, making it a great choice for rapid prototyping and development."}
-{"instruction": "Can I customize Gradio's UI?", "input": "", "output": "Yes, Grado provides a wide range of customization options for its UI components. You can change the layout, colors, fonts, and even add custom CSS or JavaScript code to make your application look and feel exactly as you want it to."}
+{"instruction": "What type of artificial intelligence are LLMs?", "input": "", "output": "Large Language Models (LLMs) are a type of artificial intelligence."}
+{"instruction": "What tasks can be performed by an LLM?", "input": "", "output": "An LLM can be used for writing, translation, and answering questions."}
+{"instruction": "How do LLMs generate text?", "input": "", "output": "LLMs work by predicting the next word in a sequence, using its knowledge of grammar, facts, and writing styles to generate coherent and natural-sounding text."}
+{"instruction": "What is given to an LLM at the start of the text generation process?", "input": "", "output": "An LLM is given a prompt, which is a piece of text to start with, before generating the rest of the text one word at a time."}
 {"instruction": "What is Pydantic used for?", "input": "", "output": "Pydantic is the most widely used data validation library for Python, providing fast and extensible data validation capabilities."}
-{"instruction": "How does Pydantic work?", "input": "", "output": "Pydantic works by defining how data should be in pure, canonical Python 3.9+, and then validating it with the Pydantic library."}
-{"instruction": "What is an Alias in Pydantic?", "input": "", "output": "An alias in Pydantic refers to a way of referring to a type or value using a shorter name, making it easier to work with complex types."}
-{"instruction": "What is the purpose of Configuration in Pydantic?", "input": "", "output": "The configuration in Pydantic is used to customize the behavior of the library, such as changing validation modes or customizing error messages."}
-{"instruction": "How can I use Pydantic with my IDE?", "input": "", "output": "Pydantic can be used with your IDE by leveraging its linter and code completion features, which provide enhanced auto-completion and validation for Pydantic types."}
-{"instruction": "What is condecimal?", "input": "", "output": "A wrapper around Decimal that adds validation."}
-{"instruction": "What is the purpose of condate?", "input": "", "output": "A wrapper for date that adds constraints."}
-{"instruction": "What is the purpose of the `set_eval_attribute` function?", "input": "", "output": "To set an attribute on the current task run."}
-{"instruction": "How do you increment a metric on the current task run?", "input": "", "output": "Using the `increment_eval_metric` function."}
-{"instruction": "What is the output of the `model_json_schema_with_evaluators` function?", "input": "", "output": "A dictionary representing the JSON schema for the dataset type, including evaluator details."}
-{"instruction": "Can you explain the purpose of the `dataset_type` parameter in the `set_dataset_type` function?", "input": "", "output": "To specify the dataset type to use."}
-{"instruction": "What is the role of the `current_case` variable in the `increment_eval_metric` function?", "input": "", "output": "It represents the current task run."}
-{"instruction": "How do you generate a JSON schema for a dataset using Pydantic?", "input": "", "output": "Using the `model_json_schema_with_evaluators` function."}
+{"instruction": "What does Pydantic provide?", "input": "", "output": "Pydantic provides data validation using Python type hints, allowing developers to define how data should be in pure, canonical Python 3.9+ and validate it with Pydantic."}
+{"instruction": "Where can I find more information about Pydantic?", "input": "", "output": "You can find more information about Pydantic in the official documentation, which includes API documentation, internal details, and examples of usage."}
+{"instruction": "What is the purpose of Pydantic's alias feature?", "input": "", "output": "Pydantic's alias feature allows users to define custom types that can be used throughout their codebase."}
+{"instruction": "How does Pydantic handle errors?", "input": "", "output": "Pydantic provides various error handling mechanisms, including usage errors, validation errors, and custom validators."}
+{"instruction": "What is the weather like in Miami?", "input": "", "output": "Temperature is around 22\u00b0C with a chance of precipitation."}
+{"instruction": "What is the weather like in London?", "input": "", "output": "Temperature is around 12\u00b0C with a chance of cloudiness."}
+{"instruction": "What is the purpose of `grok_model_profile` function in pydantic_ai?", "input": "", "output": "The `grok_model_profile` function returns None, indicating that there is no model profile available for a Grok model."}
+{"instruction": "What is the purpose of `mistral_model_profile` function in pydantic_ai?", "input": "", "output": "The `mistral_model_profile` function returns None, indicating that there is no model profile available for a Mistral model."}
+{"instruction": "What is the purpose of the `set_eval_attribute` function?", "input": "", "output": "This function sets an attribute on the current task run."}
+{"instruction": "How does the `increment_eval_metric` function work?", "input": "", "output": "It increments a metric on the current task run by passing the metric name and amount to increment as arguments."}
+{"instruction": "What is the purpose of condecimal?", "input": "", "output": "A wrapper around Decimal that adds validation constraints."}
+{"instruction": "What type of constraint does condate add to a date?", "input": "", "output": "It adds interval constraints (gt, ge, lt, le) and multiple-of constraints to a date."}
