@@ -4,20 +4,23 @@ Question & Answer dataset for fine-tuning LLMs with Unsloth.
 
 It uses LangChain with an Ollama model and Pydantic for structured
 data extraction, and outputs a JSONL file in the Alpaca format.
+All settings are managed through the 'config.yaml' file.
 
 Usage:
-1. Make sure Ollama is running and you have a model like 'llama3.2' pulled.
+1. Ensure Ollama is running and you have a model like 'llama3.2' pulled.
    `ollama pull llama3.2`
 
-2. Place your Markdown files in a directory (e.g., './data/raw').
+2. Configure your settings in the 'config.yaml' file.
 
-3. Run the script:
-   `python create_dataset.py --input-dir ./data/raw --output-file dataset.jsonl --model llama3.2`
+3. Place your Markdown files in the specified input directory.
+
+4. Run the script:
+   `python create_dataset.py`
 """
 import os
 import glob
 import json
-import argparse
+import yaml
 from pydantic import BaseModel, Field
 from typing import List, Optional
 from langchain_ollama import ChatOllama
@@ -36,6 +39,22 @@ class QuestionAnswer(BaseModel):
 class QADocument(BaseModel):
     """A collection of question-answer pairs extracted from a document."""
     qa_pairs: List[QuestionAnswer] = Field(..., description="A list of question and answer pairs from the document.")
+
+# --- Helper Functions ---
+
+def load_config(config_path: str = 'config.yaml') -> dict:
+    """Loads the YAML configuration file."""
+    try:
+        with open(config_path, 'r') as f:
+            return yaml.safe_load(f)
+    except FileNotFoundError:
+        print(f"Error: Configuration file '{config_path}' not found.")
+        print("Please create a 'config.yaml' file based on the example in the README.")
+        exit(1)
+    except yaml.YAMLError as e:
+        print(f"Error parsing YAML file: {e}")
+        exit(1)
+
 
 # --- Core Functions ---
 
@@ -76,37 +95,33 @@ def generate_qa_from_markdown(structured_client: Runnable, content: str) -> Opti
 
 def main():
     """Main function to run the data generation process."""
-    parser = argparse.ArgumentParser(description="Generate a Q&A dataset from Markdown files using LangChain, Ollama, and Pydantic.")
-    parser.add_argument("--input-dir", type=str, default='./data/raw', help="Directory containing the input Markdown files.")
-    parser.add_argument("--output-file", type=str, default="dataset.jsonl", help="Path to the output JSONL file.")
-    parser.add_argument("--model", type=str, default="llama3.2", help="Name of the Ollama model to use.")
-    parser.add_argument("--ollama-host", type=str, default="http://127.0.0.1:11434", help="Ollama API base URL.")
+    config = load_config()
     
-    args = parser.parse_args()
+    ollama_config = config.get('ollama_settings', {})
+    paths_config = config.get('file_paths', {})
 
-    print(f"Starting dataset generation with model '{args.model}'...")
+    model_name = ollama_config.get('model', 'llama3.2')
+    ollama_host = ollama_config.get('host', 'http://127.0.0.1:11434')
+    input_dir = paths_config.get('input_directory', './data/raw')
+    output_file = paths_config.get('output_file', 'dataset.jsonl')
+
+    print(f"Starting dataset generation with model '{model_name}'...")
 
     # 1. Instantiate the LangChain model and bind it to the Pydantic schema.
-    try:
-        llm = ChatOllama(model=args.model, base_url=args.ollama_host)
-        structured_llm = llm.with_structured_output(QADocument)
-    except Exception as e:
-        print(f"Error: Could not initialize the LangChain Ollama client.")
-        print(f"Please ensure 'langchain_ollama' is installed and check your connection settings.")
-        print(f"Details: {e}")
-        return
-
+    
+    llm = ChatOllama(model=model_name, base_url=ollama_host)
+    structured_llm = llm.with_structured_output(QADocument)
     # 2. Find all Markdown files
-    markdown_files = glob.glob(os.path.join(args.input_dir, "*.md"))
+    markdown_files = glob.glob(os.path.join(input_dir, "*.md"))
     if not markdown_files:
-        print(f"Error: No Markdown (.md) files found in '{args.input_dir}'.")
+        print(f"Error: No Markdown (.md) files found in '{input_dir}'.")
         return
 
     print(f"Found {len(markdown_files)} Markdown files to process.")
 
     # 3. Process each file and write to JSONL
     total_pairs = 0
-    with open(args.output_file, "w") as f:
+    with open(output_file, "w") as f:
         for file_path in markdown_files:
             print(f"\nProcessing file: {os.path.basename(file_path)}")
             with open(file_path, "r", encoding="utf-8") as md_file:
@@ -133,7 +148,7 @@ def main():
     print("\n-------------------------------------------------")
     print("Dataset generation complete!")
     print(f"Total question-answer pairs generated: {total_pairs}")
-    print(f"Output saved to: {args.output_file}")
+    print(f"Output saved to: {output_file}")
     print("-------------------------------------------------")
     print("\nNext step: Use this `.jsonl` file to fine-tune your model with Unsloth!")
 
