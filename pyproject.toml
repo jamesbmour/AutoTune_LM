@@ -1,13 +1,55 @@
 [project]
 name = "autotune-lm"
 version = "0.1.0"
-description = "Add your description here"
+description = "A project for fine-tuning LLMs with local and cloud support."
 readme = "README.md"
-requires-python = ">=3.11"
+requires-python = ">=3.10"
+license = { file = "LICENSE" }
+authors = [{ name = "Your Name", email = "your@email.com" }]
+
 dependencies = [
-    "langchain>=0.3.27",
-    "langchain-community>=0.3.29",
-    "langchain-ollama>=0.3.7",
-    "langchain-openai>=0.3.32",
-    "langgraph>=0.6.6",
+    # Core ML/NLP
+    "torch~=2.3.0",
+    "transformers~=4.40.0",
+    "datasets~=2.18.0",
+    "numpy~=1.26.4",
+    "pandas~=2.2.2",
+    # LLM Integration
+    "ollama>=0.2.0,<1.0.0",
+    "openai~=1.40.0", # For OpenAI API fallback
+    # Fine-tuning - Unsloth is installed via a special command, not just pip
+    # See project README for Unsloth installation instructions.
+    # "unsloth[cu121-ampere-torch230] @ https://github.com/unslothai/unsloth/releases/download/v2024.5/unsloth-2024.5-py310-py311-py312-torch2.3.0-cu121-cp310-cp310-linux_x86_64.whl",
+    # Data Processing
+    "markdown-it-py~=3.0.0",
+    "pyyaml~=6.0.1",
+    "jsonlines~=4.0.0",
+    # Utilities
+    "tqdm~=4.66.2",
+    "python-dotenv~=1.0.1",
+    "argparse~=1.4.0",
+    "pathlib~=1.0.1",
+    # LangChain (existing)
+    "langchain~=0.2.1",
+    "langchain-community~=0.2.1",
+    "langchain-ollama~=0.1.2",
+    "langchain-openai~=0.1.8",
+    "langgraph~=0.1.1",
+    "unsloth>=2024.8",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest~=8.2.0",
+    "black~=24.4.2",
+    "flake8~=7.0.0",
+]
+
+notebooks = [
+    "jupyter~=1.0.0",
+    "ipykernel~=6.29.4",
+]
+
+all = [
+    "autotune-lm[dev,notebooks]",
 ]

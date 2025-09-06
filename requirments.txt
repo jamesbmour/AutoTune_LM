@@ -1,5 +1,10 @@
-langgraph
-langchain
-langchain-community
-langchain-ollama
-langchain-openai
+# This project uses pyproject.toml for dependency management.
+# To install dependencies, run:
+#
+# pip install .
+#
+# For development dependencies:
+# pip install .[dev]
+#
+# For all optional dependencies:
+# pip install .[all]
