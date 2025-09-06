@@ -1,0 +1,13 @@
+[project]
+name = "autotune-lm"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "langchain>=0.3.27",
+    "langchain-community>=0.3.29",
+    "langchain-ollama>=0.3.7",
+    "langchain-openai>=0.3.32",
+    "langgraph>=0.6.6",
+]
