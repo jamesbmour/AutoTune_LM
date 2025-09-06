@@ -1,0 +1,45 @@
+# Markdown to Q&A Dataset Converter Configuration
+
+# Input/Output Settings
+input_directory: "../data/raw/"
+output_directory: "./data/processed/"
+
+# Model Settings
+ollama_model: "llama3.2"
+backup_ollama_model: "phi4-mini"
+
+# Processing Settings
+max_context_length: 2048
+chunk_overlap: 200
+num_questions_per_chunk: 3
+min_chunk_length: 100
+
+# Output Format Settings
+output_format: "unsloth"  # Options: unsloth, alpaca, sharegpt
+
+# File Processing Settings
+file_extensions:
+  - ".md"
+  - ".markdown" 
+  - ".mdown"
+  - ".mkd"
+
+exclude_patterns:
+  - "README.md"
+  - "CHANGELOG.md"
+  - "LICENSE.md"
+  - "CONTRIBUTING.md"
+
+max_files_to_process: null  # Set to a number to limit files processed
+
+# Quality Control Settings
+min_question_length: 10
+min_answer_length: 20
+max_retries_per_chunk: 3
+
+# Fine-tuning Settings
+default_base_model: "unsloth/llama-3.2-3b-instruct-bnb-4bit"
+training_epochs: 3
+learning_rate: 0.0002
+batch_size: 2
+gradient_accumulation_steps: 4

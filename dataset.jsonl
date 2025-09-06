@@ -1,0 +1,27 @@
+{"instruction": "What are Large Language Models (LLMs) used for?", "input": "", "output": "LLMs can be used for a variety of tasks, such as writing, translation, and answering questions."}
+{"instruction": "How do LLMs work?", "input": "", "output": "LLMs work by predicting the next word in a sequence. They are given a prompt, which is a piece of text to start with, and then they generate the rest of the text one word at a time."}
+{"instruction": "What gives LLMs their ability to generate human-like text?", "input": "", "output": "The model uses its knowledge of grammar, facts, and writing styles to generate text that is coherent and natural-sounding."}
+{"instruction": "What is the main function of the inline_defs_jsonschema_transformer?", "input": "", "output": "The inline_defs_jsonschema_transformer is used to transform JSON schema from Pydantic to be suitable for Gemini."}
+{"instruction": "Why is the '$ref' keyword not supported in Gemini?", "input": "", "output": "Recursive '$ref's in JSON Schema are not supported by Gemini, as it can cause infinite loops."}
+{"instruction": "What happens when 'prefixItems' is present in the schema?", "input": "", "output": "When 'prefixItems' is present, it is converted to 'items' for better compatibility with Gemini."}
+{"instruction": "What is the weather like in Miami?", "input": "", "output": "Output from weather API: Temperature: 22\u00b0C Description: Sunny"}
+{"instruction": "What is the weather like in London?", "input": "", "output": "Output from weather API: Temperature: 10\u00b0C Description: Cloudy"}
+{"instruction": "What is Pydantic used for?", "input": "", "output": "Pydantic is the most widely used data validation library for Python, providing fast and extensible data validation capabilities."}
+{"instruction": "What type of annotations can be used in Pydantic?", "input": "", "output": "Pydantic supports various types of annotations such as Aliases, Conversion Table, Dataclasses, Experimental, Fields, Forward Annotations, JSON, JSON Schema, Models, Performance, Settings Management, Serialization, Strict Mode, Type Adapter, Types, Unions, Validation Decorator, and Validators."}
+{"instruction": "How do I define data validation in Pydantic?", "input": "", "output": "Data validation can be defined using pure, canonical Python 3.9+ type hints, which are then validated by Pydantic."}
+{"instruction": "What is the purpose of pydantic_core?", "input": "", "output": "pydantic_core provides additional functionality for Pydantic, including core schema and color types."}
+{"instruction": "How do I handle errors in Pydantic?", "input": "", "output": "Pydantic supports error handling through its Error Handling feature, which allows for custom validation errors, usage errors, and validation errors."}
+{"instruction": "What is condecimal in Pydantic?", "input": "", "output": "A wrapper around Decimal that adds validation constraints."}
+{"instruction": "What does condate do in Pydantic?", "input": "", "output": "A wrapper for date that adds constraints."}
+{"instruction": "Set an attribute on the current task run.", "input": "", "output": "def set_eval_attribute(name: str, value: Any) -> None:"}
+{"instruction": "Increment a metric on the current task run.", "input": "", "output": "def increment_eval_metric(name: str, amount: int | float) -> None:"}
+{"instruction": "Generate a JSON schema for this dataset type, including evaluator details.", "input": "", "output": "def model_json_schema_with_evaluators(custom_evaluator_types: Sequence[type[Evaluator[InputsT, OutputT, MetadataT]]] = ()) -> dict[str, Any]:"}
+{"instruction": "Set an attribute on the current task run.", "input": "", "output": "def set_eval_attribute(name: str, value: Any) -> None:"}
+{"instruction": "Generate a JSON schema for this dataset type, including evaluator details.", "input": "", "output": "def model_json_schema_with_evaluators(custom_evaluator_types: Sequence[type[Evaluator[InputsT, OutputT, MetadataT]]] = ()) -> dict[str, Any]:"}
+{"instruction": "Increment a metric on the current task run.", "input": "", "output": "def increment_eval_metric(name: str, amount: int | float) -> None:"}
+{"instruction": "Set an attribute on the current task run.", "input": "", "output": "def set_eval_attribute(name: str, value: Any) -> None:"}
+{"instruction": "Generate a JSON schema for this dataset type, including evaluator details.", "input": "", "output": "def model_json_schema_with_evaluators(custom_evaluator_types: Sequence[type[Evaluator[InputsT, OutputT, MetadataT]]] = ()) -> dict[str, Any]:"}
+{"instruction": "Increment a metric on the current task run.", "input": "", "output": "def increment_eval_metric(name: str, amount: int | float) -> None:"}
+{"instruction": "Generate a JSON schema for this dataset type, including evaluator details.", "input": "", "output": "def model_json_schema_with_evaluators(custom_evaluator_types: Sequence[type[Evaluator[InputsT, OutputT, MetadataT]]] = ()) -> dict[str, Any]:"}
+{"instruction": "Set an attribute on the current task run.", "input": "", "output": "def set_eval_attribute(name: str, value: Any) -> None:"}
+{"instruction": "Increment a metric on the current task run.", "input": "", "output": "def increment_eval_metric(name: str, amount: int | float) -> None:"}

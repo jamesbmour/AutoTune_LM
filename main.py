@@ -2,38 +2,31 @@
 This script converts unstructured Markdown documents into a structured
 Question & Answer dataset for fine-tuning LLMs with Unsloth.
 
-It uses LangChain with an Ollama model, Pydantic, and Instructor for structured
+It uses LangChain with an Ollama model and Pydantic for structured
 data extraction, and outputs a JSONL file in the Alpaca format.
 
 Usage:
 1. Make sure Ollama is running and you have a model like 'llama3.2' pulled.
    `ollama pull llama3.2`
 
-2. Place your Markdown files in a directory (e.g., 'markdown_docs').
+2. Place your Markdown files in a directory (e.g., './data/raw').
 
 3. Run the script:
-   `python create_dataset.py --input-dir ./markdown_docs --output-file dataset.jsonl --model llama3.2`
+   `python create_dataset.py --input-dir ./data/raw --output-file dataset.jsonl --model llama3.2`
 """
 import os
 import glob
 import json
 import argparse
-import instructor
 from pydantic import BaseModel, Field
 from typing import List, Optional
+from langchain_ollama import ChatOllama
 from langchain_core.messages import SystemMessage, HumanMessage
-from langchain_ollama import ChatOllama, OllamaEmbeddings
-
-
-model = ChatOllama(model='llama3.2')
-embedding = OllamaEmbeddings(model='nomic-embed-text')
-
-
-
+from langchain_core.runnables import Runnable
 
 # --- Pydantic Models for Structured Output ---
 # These models define the exact structure we want the LLM to generate.
-# Instructor will use these models to guide the LLM's output.
+# LangChain's .with_structured_output() will use these.
 
 class QuestionAnswer(BaseModel):
     """A single question and its corresponding answer."""
@@ -46,12 +39,12 @@ class QADocument(BaseModel):
 
 # --- Core Functions ---
 
-def generate_qa_from_markdown(client: ChatOllama, content: str) -> Optional[QADocument]:
+def generate_qa_from_markdown(structured_client: Runnable, content: str) -> Optional[QADocument]:
     """
-    Uses a LangChain Ollama model to generate Q&A pairs from a given Markdown text.
+    Uses a structured-output-enabled LangChain Ollama model to generate Q&A pairs.
 
     Args:
-        client: The patched LangChain Ollama client.
+        structured_client: The LangChain client with structured output enabled.
         content: The Markdown content as a string.
 
     Returns:
@@ -73,12 +66,8 @@ def generate_qa_from_markdown(client: ChatOllama, content: str) -> Optional[QADo
 
     try:
         print("   Generating Q&A pairs... (This might take a moment)")
-        # The 'invoke' method is used for LangChain models
-        response = client.invoke(
-            messages,
-            response_model=QADocument,
-            max_retries=2,
-        )
+        # The .invoke method is called on the client that already knows the output structure.
+        response = structured_client.invoke(messages)
         print(f"   Successfully generated {len(response.qa_pairs)} pairs.")
         return response
     except Exception as e:
@@ -97,10 +86,16 @@ def main():
 
     print(f"Starting dataset generation with model '{args.model}'...")
 
-    # 1. Instantiate the LangChain model and patch it with Instructor
-    # This enables the `response_model` functionality.
-    llm = ChatOllama(model=args.model, base_url=args.ollama_host)
-    client = instructor.patch(llm)
+    # 1. Instantiate the LangChain model and bind it to the Pydantic schema.
+    try:
+        llm = ChatOllama(model=args.model, base_url=args.ollama_host)
+        structured_llm = llm.with_structured_output(QADocument)
+    except Exception as e:
+        print(f"Error: Could not initialize the LangChain Ollama client.")
+        print(f"Please ensure 'langchain_ollama' is installed and check your connection settings.")
+        print(f"Details: {e}")
+        return
+
     # 2. Find all Markdown files
     markdown_files = glob.glob(os.path.join(args.input_dir, "*.md"))
     if not markdown_files:
@@ -121,8 +116,8 @@ def main():
                 print("   Skipping empty file.")
                 continue
 
-            # The model name is now part of the client, so it's not passed here
-            qa_document = generate_qa_from_markdown(client, content)
+            # Pass the structured LLM client to the generation function
+            qa_document = generate_qa_from_markdown(structured_llm, content)
             
             if qa_document and qa_document.qa_pairs:
                 # Convert to Alpaca format for Unsloth compatibility
