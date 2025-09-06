@@ -1,0 +1,6 @@
+# Fine-tuning parameters
+base_model: "gpt2"
+use_unsloth: true
+epochs: 3
+batch_size: 8
+learning_rate: 2e-5

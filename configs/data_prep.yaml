@@ -1,0 +1,3 @@
+# Data preparation parameters
+chunk_size: 500
+llm_model: "llama3.2:latest" # Can be "gpt-3.5-turbo", "ollama/llama3.2", etc.
